@@ -31,7 +31,7 @@ runs:
         gunzip vesctl.linux-amd64.gz
         chmod +x vesctl.linux-amd64
         test -d ~/.local/bin || mkdir -p ~/.local/bin
-        mv vesctl.linux-amd64 "~/.local/bin/vesctl
+        mv vesctl.linux-amd64 ~/.local/bin/vesctl
 
     - name: Add vesctl to PATH
       shell: bash
