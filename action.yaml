@@ -1,0 +1,43 @@
+name: 'vesctl installer'
+description: 'Install vesvtl to the current runner'
+author: 'tsanghan tsanghan@gmail.com'
+branding:
+  icon: command
+  color: blue
+inputs:
+  version:
+    description: 'The version of vesctl to install'
+    required: false
+    default: 'latest'
+runs:
+  using: 'composite'
+  steps:
+    - name: Cache vesctl
+      id: cache-vesctl
+      uses: actions/cache@v4
+      with:
+        path: ~/.local/bin/vesctl
+        key: ${{ inputs.version }}
+        restore-keys: |
+          vesctl-
+
+    - name: Install vesctl
+      if: steps.cache-vesctl.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install gzip
+        curl -SLO "https://vesio.azureedge.net/releases/vesctl/$(curl -s https://downloads.volterra.io/releases/vesctl/latest.txt)/vesctl.linux-amd64.gz"
+        gunzip vesctl.linux-amd64.gz
+        chmod +x vesctl.linux-amd64
+        test -d ~/.local/bin || mkdir -p ~/.local/bin
+        mv vesctl.linux-amd64 "~/.local/bin/vesctl
+
+    - name: Add vesctl to PATH
+      shell: bash
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Print installed vesctl version
+      shell: bash
+      run: |
+        vesctl version
